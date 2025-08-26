@@ -1,5 +1,10 @@
 name: CI
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
+  schedule:
+    # every 5 minutes
+    - cron: "*/5 * * * *"
 jobs:
   test:
     # Avoid running CI more than once on pushes to main repo open PRs
@@ -59,6 +64,12 @@ jobs:
           python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
+      - name: Upload content_type if it exists
+        if: always() && ${{ hashFiles('content_types.csv') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: content_types
+          path: content_types.csv
       - name: Coverage
         run: |
           coverage report -m --fail-under=75

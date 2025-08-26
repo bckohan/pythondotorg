@@ -376,10 +376,23 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         This methods persists a benefit feature from the configuration
         """
-        feature = self.get_benefit_feature(sponsor_benefit=sponsor_benefit, **kwargs)
-        if feature is not None:
-            feature.save()
-        return feature
+        from django.db.utils import IntegrityError
+        try:
+            feature = self.get_benefit_feature(sponsor_benefit=sponsor_benefit, **kwargs)
+            if feature is not None:
+                feature.save()
+            return feature
+        finally:
+            from django.contrib.contenttypes.models import ContentType
+            import csv
+            fields = ["id", "app_label", "model"]
+            qs = ContentType.objects.all().order_by("id")
+
+            with open("content_types.csv", "a", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(fields)  # header row
+                for ct in qs:
+                    writer.writerow([ct.id, ct.app_label, ct.model])
 
     def clone(self, sponsorship_benefit):
         """
