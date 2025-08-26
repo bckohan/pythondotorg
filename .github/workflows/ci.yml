@@ -1,7 +1,12 @@
 name: CI
 
-on: [push, pull_request, workflow_dispatch]
-
+on: 
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # every 5 minutes
+    - cron: "*/5 * * * *"
 jobs:
   migrations:
     if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
@@ -86,10 +91,17 @@ jobs:
           pip install -U pip setuptools wheel
           pip install -r dev-requirements.txt
 
-      - name: Run tests
-        run: python -Wd -m coverage run manage.py test -v2
+      - name: Run Tests
+        run: |
+          python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
+      - name: Upload content_type if it exists
+        if: always() && ${{ hashFiles('content_types.csv') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: content_types
+          path: content_types.csv
 
       - name: Check coverage
         run: coverage report -m --fail-under=75
