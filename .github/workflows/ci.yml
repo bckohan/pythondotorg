@@ -69,8 +69,10 @@ jobs:
         if: ${{ always() && hashFiles('content_types.csv') != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: content_types
-          path: content_types.csv
+          name: test_log
+          path: |
+            content_types.csv
+            test_order.log
       - name: Coverage
         run: |
           coverage report -m --fail-under=75

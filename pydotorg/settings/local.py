@@ -72,3 +72,5 @@ CACHES = {
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] += (
     'rest_framework.renderers.BrowsableAPIRenderer',
 )
+
+TEST_RUNNER = "pydotorg.settings.test_logger.LoggingDiscoverRunner"
