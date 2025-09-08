@@ -93,7 +93,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          python -Wd -m coverage run manage.py test -v2
+          python -Wd -m coverage run manage.py test -v2 --failfast
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
       - name: Upload content_type if it exists
